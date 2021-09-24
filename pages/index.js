@@ -1,7 +1,6 @@
 import React from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { makeStyles } from "@material-ui/styles"
-import { getProducts } from "../actions/productActions"
 import { wrapper } from "../store"
 
 import Head from "next/head"
@@ -13,6 +12,11 @@ import Typography from "@material-ui/core/Typography"
 import { Container } from "@material-ui/core"
 import { Pagination } from "@material-ui/core"
 import Card from "@material-ui/core/Card"
+
+import {
+  productsSelectors,
+  getProducts,
+} from "../features/products/productsSlice"
 
 const perPage = 6
 
@@ -57,14 +61,17 @@ const Index = () => {
   const classes = useStyles()
   const dispatch = useDispatch()
 
-  const { data, page, lastPage, loading } = useSelector(
-    (state) => state.products
-  )
+  const { page, lastPage, loading } = useSelector((state) => state.products)
+  const products = useSelector(productsSelectors.selectAll)
+  //console.log(data)
 
   const handleChangePage = (event, newPage) => {
-    dispatch(getProducts(newPage, perPage))
+    dispatch(getProducts({ page: newPage, perPage }))
   }
 
+  if (loading) {
+    return "Loading..."
+  }
   return (
     <>
       <Head>
@@ -83,7 +90,7 @@ const Index = () => {
           Shop
         </Typography>
         <Grid container spacing={5} alignItems="flex-end">
-          {data.map((item, i) => (
+          {products.map((item, i) => (
             <Grid item key={item.id} xs={12} sm={6} md={4}>
               <Card className={classes.card}>
                 <Image
@@ -117,7 +124,7 @@ const Index = () => {
 }
 
 export const getStaticProps = wrapper.getStaticProps((store) => async () => {
-  await store.dispatch(getProducts(1, perPage))
+  await store.dispatch(getProducts({ page: 1, perPage }))
   return { revalidate: 1 }
 })
 

@@ -2,8 +2,7 @@ import { createStore, applyMiddleware, combineReducers } from "redux"
 import { HYDRATE, createWrapper } from "next-redux-wrapper"
 import thunkMiddleware from "redux-thunk"
 
-import { productReducers } from "./reducers/productReducers"
-
+import productsSlice from "./features/products/productsSlice"
 const bindMiddleware = (middleware) => {
   if (process.env.NODE_ENV !== "production") {
     const { composeWithDevTools } = require("redux-devtools-extension")
@@ -13,7 +12,7 @@ const bindMiddleware = (middleware) => {
 }
 
 const combinedReducer = combineReducers({
-  products: productReducers,
+  products: productsSlice,
 })
 
 const reducer = (state, action) => {
